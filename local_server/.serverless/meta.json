@@ -1,0 +1,124 @@
+{
+  "C:\\work\\programing\\loan_mantra_copy_code\\local_server\\serverless.yml": {
+    "versionFramework": "4.33.0",
+    "servicePath": "C:\\work\\programing\\loan_mantra_copy_code\\local_server\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "tricolor-local-server",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs20.x",
+        "region": "ap-south-1",
+        "stage": "prod",
+        "environment": {
+          "NODE_ENV": "production",
+          "DYNAMODB_TABLE_NAME": "LoanSubmissions"
+        },
+        "iamRoleStatements": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "dynamodb:PutItem",
+              "dynamodb:GetItem",
+              "dynamodb:UpdateItem",
+              "dynamodb:Query"
+            ],
+            "Resource": "arn:aws:dynamodb:ap-south-1:*:table/LoanSubmissions"
+          }
+        ],
+        "versionFunctions": true
+      },
+      "functions": {
+        "api": {
+          "handler": "index.handler",
+          "events": [
+            {
+              "httpApi": "*"
+            }
+          ]
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs20.x",
+      "region": "ap-south-1",
+      "stage": "prod",
+      "environment": {
+        "NODE_ENV": "production",
+        "DYNAMODB_TABLE_NAME": "LoanSubmissions"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:PutItem",
+            "dynamodb:GetItem",
+            "dynamodb:UpdateItem",
+            "dynamodb:Query"
+          ],
+          "Resource": "arn:aws:dynamodb:ap-south-1:*:table/LoanSubmissions"
+        }
+      ],
+      "versionFunctions": true
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "error": {
+      "message": "The \"config credentials\" command was deprecated in v4. To configure your AWS credentials, run the \"serverless\" command instead.",
+      "code": "UNRECOGNIZED_CLI_COMMAND"
+    },
+    "serviceRawFile": "service: tricolor-local-server\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x # adjust to match your local AWS Lambda compatible node version\r\n  region: ap-south-1 # change to your intended region\r\n  stage: prod\r\n  environment:\r\n    NODE_ENV: production\r\n    DYNAMODB_TABLE_NAME: LoanSubmissions\r\n  iamRoleStatements:\r\n    - Effect: \"Allow\"\r\n      Action:\r\n        - \"dynamodb:PutItem\"\r\n        - \"dynamodb:GetItem\"\r\n        - \"dynamodb:UpdateItem\"\r\n        - \"dynamodb:Query\"\r\n      Resource: \"arn:aws:dynamodb:${self:provider.region}:*:table/LoanSubmissions\"\r\n\r\nfunctions:\r\n  api:\r\n    handler: index.handler\r\n    events:\r\n      - httpApi: '*' # Using HTTP API for better performance and lower cost than REST API\r\n",
+    "command": [
+      "config",
+      "credentials"
+    ],
+    "options": {
+      "provider": "aws",
+      "key": "AKIAQAIOO7WCXLUCZSSF",
+      "secret": "<REDACTED>"
+    },
+    "orgId": "9fb0f272-fbb9-4593-84a0-f3f4898fd242",
+    "orgName": "devdeepnarayan",
+    "userId": "RNMZt1KrGVWdcqccT8",
+    "userName": "devdeepnarayan",
+    "serviceProviderAwsAccountId": "000567213445",
+    "serviceProviderAwsCfStackName": "tricolor-local-server-prod",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:ap-south-1:000567213445:stack/tricolor-local-server-prod/8abe6e70-1557-11f1-ad9a-020f8b616c5d",
+    "serviceProviderAwsCfStackCreated": "2026-03-01T10:15:16.566Z",
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": "CREATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "ApiLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:ap-south-1:000567213445:function:tricolor-local-server-prod-api:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-tricolor-local-server-prod-ApiLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "HttpApiId",
+        "OutputValue": "gpa4c1psad",
+        "Description": "Id of the HTTP API",
+        "ExportName": "sls-tricolor-local-server-prod-HttpApiId"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-ap-south-1-3c7b4a53-466b",
+        "ExportName": "sls-tricolor-local-server-prod-ServerlessDeploymentBucketName"
+      },
+      {
+        "OutputKey": "HttpApiUrl",
+        "OutputValue": "https://gpa4c1psad.execute-api.ap-south-1.amazonaws.com",
+        "Description": "URL of the HTTP API",
+        "ExportName": "sls-tricolor-local-server-prod-HttpApiUrl"
+      }
+    ]
+  }
+}

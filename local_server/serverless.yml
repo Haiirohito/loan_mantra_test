@@ -1,0 +1,24 @@
+service: tricolor-local-server
+
+provider:
+  name: aws
+  runtime: nodejs20.x # adjust to match your local AWS Lambda compatible node version
+  region: ap-south-1 # change to your intended region
+  stage: prod
+  environment:
+    NODE_ENV: production
+    DYNAMODB_TABLE_NAME: LoanSubmissions
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:PutItem"
+        - "dynamodb:GetItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:Query"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/LoanSubmissions"
+
+functions:
+  api:
+    handler: index.handler
+    events:
+      - httpApi: '*' # Using HTTP API for better performance and lower cost than REST API
