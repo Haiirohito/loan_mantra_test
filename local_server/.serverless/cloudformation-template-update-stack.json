@@ -5,7 +5,7 @@
     "ApiLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/tricolor-local-server-prod-api"
+        "LogGroupName": "/aws/lambda/loanmantra-server-prod-api"
       }
     },
     "IamRoleLambdaExecution": {
@@ -33,7 +33,7 @@
               "Fn::Join": [
                 "-",
                 [
-                  "tricolor-local-server",
+                  "loanmantra-server",
                   "prod",
                   "lambda"
                 ]
@@ -51,7 +51,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tricolor-local-server-prod*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/loanmantra-server-prod*:*"
                     }
                   ]
                 },
@@ -62,7 +62,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/tricolor-local-server-prod*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/loanmantra-server-prod*:*:*"
                     }
                   ]
                 },
@@ -85,7 +85,7 @@
           "Fn::Join": [
             "-",
             [
-              "tricolor-local-server",
+              "loanmantra-server",
               "prod",
               {
                 "Ref": "AWS::Region"
@@ -101,11 +101,11 @@
       "Properties": {
         "Code": {
           "S3Bucket": "serverless-framework-deployments-ap-south-1-3c7b4a53-466b",
-          "S3Key": "serverless/tricolor-local-server/prod/1772360115269-2026-03-01T10:15:15.269Z/tricolor-local-server.zip"
+          "S3Key": "serverless/loanmantra-server/prod/1772364652731-2026-03-01T11:30:52.731Z/loanmantra-server.zip"
         },
         "Handler": "index.handler",
         "Runtime": "nodejs20.x",
-        "FunctionName": "tricolor-local-server-prod-api",
+        "FunctionName": "loanmantra-server-prod-api",
         "MemorySize": 1024,
         "Timeout": 6,
         "Environment": {
@@ -125,21 +125,36 @@
         "ApiLogGroup"
       ]
     },
-    "ApiLambdaVersionyvdAOf4eEdsG8LEbbxHBTmwhWzHv2C8AyCDoBQEz06k": {
+    "ApiLambdaVersionzasuFKraMBOkbPehTp1sI80ZXm9nrLRgX4LvTV8R4UI": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ApiLambdaFunction"
         },
-        "CodeSha256": "F+4POf6AtxSy1RObEuSmW+N0kUW+tC2uqkB75UJfHvE="
+        "CodeSha256": "uTU1eZocw0cICMO9Rfii4B1xwUg5AcXlQ/VvkrQKRu0="
       }
     },
     "HttpApi": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
-        "Name": "prod-tricolor-local-server",
-        "ProtocolType": "HTTP"
+        "Name": "prod-loanmantra-server",
+        "ProtocolType": "HTTP",
+        "CorsConfiguration": {
+          "AllowHeaders": [
+            "Content-Type"
+          ],
+          "AllowMethods": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS"
+          ],
+          "AllowOrigins": [
+            "*"
+          ]
+        }
       }
     },
     "HttpApiStage": {
@@ -209,13 +224,13 @@
         "TimeoutInMillis": 30000
       }
     },
-    "HttpApiRouteDefault": {
+    "HttpApiRouteAnyProxyVar": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "HttpApi"
         },
-        "RouteKey": "$default",
+        "RouteKey": "ANY /{proxy+}",
         "Target": {
           "Fn::Join": [
             "/",
@@ -235,16 +250,16 @@
     "ServerlessDeploymentBucketName": {
       "Value": "serverless-framework-deployments-ap-south-1-3c7b4a53-466b",
       "Export": {
-        "Name": "sls-tricolor-local-server-prod-ServerlessDeploymentBucketName"
+        "Name": "sls-loanmantra-server-prod-ServerlessDeploymentBucketName"
       }
     },
     "ApiLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ApiLambdaVersionyvdAOf4eEdsG8LEbbxHBTmwhWzHv2C8AyCDoBQEz06k"
+        "Ref": "ApiLambdaVersionzasuFKraMBOkbPehTp1sI80ZXm9nrLRgX4LvTV8R4UI"
       },
       "Export": {
-        "Name": "sls-tricolor-local-server-prod-ApiLambdaFunctionQualifiedArn"
+        "Name": "sls-loanmantra-server-prod-ApiLambdaFunctionQualifiedArn"
       }
     },
     "HttpApiId": {
@@ -253,7 +268,7 @@
         "Ref": "HttpApi"
       },
       "Export": {
-        "Name": "sls-tricolor-local-server-prod-HttpApiId"
+        "Name": "sls-loanmantra-server-prod-HttpApiId"
       }
     },
     "HttpApiUrl": {
@@ -278,7 +293,7 @@
         ]
       },
       "Export": {
-        "Name": "sls-tricolor-local-server-prod-HttpApiUrl"
+        "Name": "sls-loanmantra-server-prod-HttpApiUrl"
       }
     }
   }

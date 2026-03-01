@@ -3,14 +3,18 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, PutCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
+const {
+  DynamoDBDocumentClient,
+  PutCommand,
+  GetCommand,
+} = require("@aws-sdk/lib-dynamodb");
 const { nanoid } = require("nanoid");
 const cors = require("cors");
 const path = require("path");
 
 // --- Setup DynamoDB Client ---
 const client = new DynamoDBClient({
-  region: process.env.AWS_REGION || "ap-south-1" // typical region, can be overridden via env
+  region: process.env.AWS_REGION || "ap-south-1", // typical region, can be overridden via env
 });
 const docClient = DynamoDBDocumentClient.from(client);
 const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || "LoanSubmissions";
@@ -19,21 +23,27 @@ const app = express();
 
 // CORS configuration for deployment
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:8080', 'http://localhost:5173']; // default dev origins
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : ["http://localhost:8080", "http://localhost:5173"]; // default dev origins
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1 && process.env.NODE_ENV === 'production') {
-      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (
+        allowedOrigins.indexOf(origin) === -1 &&
+        process.env.NODE_ENV === "production"
+      ) {
+        var msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+    credentials: true,
+  }),
+);
 
 app.use(bodyParser.json());
 
@@ -58,14 +68,25 @@ app.post("/api/submissions", async (req, res) => {
     if (type === "contact") slaHours = 24;
     else slaHours = 48; // default for loans
   }
-  const slaDeadline = new Date(Date.now() + slaHours * 3600 * 1000).toISOString();
+  const slaDeadline = new Date(
+    Date.now() + slaHours * 3600 * 1000,
+  ).toISOString();
 
   // Clean payload to save storage
   const cleanedPayload = {};
   for (const [key, value] of Object.entries(body)) {
     if (value !== "" && value !== null && value !== undefined) {
       // Skip fields already stored at the root level
-      if (!["formName", "type", "loanType", "priority", "channel", "slaHours"].includes(key)) {
+      if (
+        ![
+          "formName",
+          "type",
+          "loanType",
+          "priority",
+          "channel",
+          "slaHours",
+        ].includes(key)
+      ) {
         cleanedPayload[key] = value;
       }
     }
@@ -92,14 +113,16 @@ app.post("/api/submissions", async (req, res) => {
   };
 
   try {
-    await docClient.send(new PutCommand({
-      TableName: TABLE_NAME,
-      Item: item
-    }));
+    await docClient.send(
+      new PutCommand({
+        TableName: TABLE_NAME,
+        Item: item,
+      }),
+    );
     return res.status(201).json({
       id: item.submissionId,
       status: item.status,
-      slaDeadline: item.slaDeadline
+      slaDeadline: item.slaDeadline,
     });
   } catch (err) {
     console.error("Error saving to DynamoDB:", err);
@@ -107,16 +130,17 @@ app.post("/api/submissions", async (req, res) => {
   }
 });
 
-
 // Public upload endpoint (mock)
 app.post("/api/submissions/:id/upload", async (req, res) => {
   const id = req.params.id;
 
   try {
-    const { Item: item } = await docClient.send(new GetCommand({
-      TableName: TABLE_NAME,
-      Key: { submissionId: id }
-    }));
+    const { Item: item } = await docClient.send(
+      new GetCommand({
+        TableName: TABLE_NAME,
+        Key: { submissionId: id },
+      }),
+    );
 
     if (!item) return res.status(404).json({ error: "Not found" });
 
@@ -126,18 +150,20 @@ app.post("/api/submissions/:id/upload", async (req, res) => {
 
     // Close the open task
     if (item.tasks) {
-      item.tasks = item.tasks.map(t => {
-        if (t.type === 'upload_docs' && t.status === 'pending') {
-          return { ...t, status: 'completed', completedAt: new Date().toISOString() };
+      item.tasks = item.tasks.map((t) => {
+        if (t.type === "upload_docs" && t.status === "pending") {
+          return { ...t, status: "completed", completedAt: new Date().toISOString() };
         }
         return t;
       });
     }
 
-    await docClient.send(new PutCommand({
-      TableName: TABLE_NAME,
-      Item: item
-    }));
+    await docClient.send(
+      new PutCommand({
+        TableName: TABLE_NAME,
+        Item: item,
+      }),
+    );
 
     return res.json({ ok: true });
   } catch (err) {

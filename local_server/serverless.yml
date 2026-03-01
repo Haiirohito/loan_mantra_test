@@ -1,13 +1,29 @@
-service: tricolor-local-server
+org: devdeepnarayan
+app: loanmantratestapi
+service: loanmantra-server
 
 provider:
   name: aws
-  runtime: nodejs20.x # adjust to match your local AWS Lambda compatible node version
-  region: ap-south-1 # change to your intended region
+  runtime: nodejs20.x
+  region: ap-south-1
   stage: prod
+
+  httpApi:
+    cors:
+      allowedOrigins:
+      allowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allowedHeaders:
+        - Content-Type
+
   environment:
     NODE_ENV: production
     DYNAMODB_TABLE_NAME: LoanSubmissions
+
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -21,4 +37,6 @@ functions:
   api:
     handler: index.handler
     events:
-      - httpApi: '*' # Using HTTP API for better performance and lower cost than REST API
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
