@@ -11,32 +11,51 @@ provider:
   httpApi:
     cors:
       allowedOrigins:
+        - https://main.d3a7mju9zni36v.amplifyapp.com
+      allowedHeaders:
+        - Content-Type
+        - Authorization
       allowedMethods:
         - GET
         - POST
         - PUT
         - DELETE
         - OPTIONS
-      allowedHeaders:
-        - Content-Type
+      allowCredentials: false
+      maxAge: 86400
 
   environment:
     NODE_ENV: production
     DYNAMODB_TABLE_NAME: LoanSubmissions
+    ALLOWED_ORIGINS: https://main.d3a7mju9zni36v.amplifyapp.com
 
   iamRoleStatements:
     - Effect: "Allow"
       Action:
-        - "dynamodb:PutItem"
-        - "dynamodb:GetItem"
-        - "dynamodb:UpdateItem"
-        - "dynamodb:Query"
-      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/LoanSubmissions"
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:UpdateItem
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/LoanSubmissions
 
 functions:
-  api:
+  createSubmission:
     handler: index.handler
     events:
       - httpApi:
-          path: /{proxy+}
-          method: ANY
+          path: /api/submissions
+          method: POST
+
+  uploadDocs:
+    handler: index.handler
+    events:
+      - httpApi:
+          path: /api/submissions/{id}/upload
+          method: POST
+
+  health:
+    handler: index.handler
+    events:
+      - httpApi:
+          path: /
+          method: GET
