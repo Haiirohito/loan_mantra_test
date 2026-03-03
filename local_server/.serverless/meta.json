@@ -1,0 +1,245 @@
+{
+  "C:\\work\\programing\\loan_mantra_copy_code\\local_server\\serverless.yml": {
+    "versionFramework": "4.33.0",
+    "servicePath": "C:\\work\\programing\\loan_mantra_copy_code\\local_server\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "org": "devdeepnarayan",
+      "app": "loanmantratestapi",
+      "service": "loanmantra-server",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs20.x",
+        "region": "ap-south-1",
+        "stage": "prod",
+        "httpApi": {
+          "cors": {
+            "allowedOrigins": [
+              "https://main.d8tu8g8fumigb.amplifyapp.com"
+            ],
+            "allowedHeaders": [
+              "Content-Type",
+              "Authorization"
+            ],
+            "allowedMethods": [
+              "GET",
+              "POST",
+              "PUT",
+              "DELETE",
+              "OPTIONS"
+            ]
+          }
+        },
+        "environment": {
+          "NODE_ENV": "production",
+          "CUSTOMERS_TABLE": "Customers",
+          "REQUESTS_TABLE": "Requests"
+        },
+        "iamRoleStatements": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "dynamodb:PutItem",
+              "dynamodb:GetItem",
+              "dynamodb:Query",
+              "dynamodb:UpdateItem"
+            ],
+            "Resource": [
+              "arn:aws:dynamodb:ap-south-1:*:table/Customers",
+              "arn:aws:dynamodb:ap-south-1:*:table/Customers/index/*",
+              "arn:aws:dynamodb:ap-south-1:*:table/Requests",
+              "arn:aws:dynamodb:ap-south-1:*:table/Requests/index/*"
+            ]
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ses:SendEmail",
+              "ses:SendRawEmail"
+            ],
+            "Resource": "*"
+          }
+        ],
+        "versionFunctions": true
+      },
+      "functions": {
+        "api": {
+          "handler": "index.handler",
+          "events": [
+            {
+              "httpApi": "*"
+            }
+          ]
+        }
+      },
+      "resources": {
+        "Resources": {
+          "CustomersTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "Customers",
+              "BillingMode": "PAY_PER_REQUEST",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "customerId",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "email",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "customerId",
+                  "KeyType": "HASH"
+                }
+              ],
+              "GlobalSecondaryIndexes": [
+                {
+                  "IndexName": "email-index",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "email",
+                      "KeyType": "HASH"
+                    }
+                  ],
+                  "Projection": {
+                    "ProjectionType": "ALL"
+                  }
+                }
+              ]
+            }
+          },
+          "RequestsTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "Requests",
+              "BillingMode": "PAY_PER_REQUEST",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "requestId",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "customerId",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "createdAt",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "requestId",
+                  "KeyType": "HASH"
+                }
+              ],
+              "GlobalSecondaryIndexes": [
+                {
+                  "IndexName": "customerId-createdAt-index",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "customerId",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "createdAt",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "ProjectionType": "ALL"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs20.x",
+      "region": "ap-south-1",
+      "stage": "prod",
+      "httpApi": {
+        "cors": {
+          "allowedOrigins": [
+            "https://main.d8tu8g8fumigb.amplifyapp.com"
+          ],
+          "allowedHeaders": [
+            "Content-Type",
+            "Authorization"
+          ],
+          "allowedMethods": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE",
+            "OPTIONS"
+          ]
+        }
+      },
+      "environment": {
+        "NODE_ENV": "production",
+        "CUSTOMERS_TABLE": "Customers",
+        "REQUESTS_TABLE": "Requests"
+      },
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "dynamodb:PutItem",
+            "dynamodb:GetItem",
+            "dynamodb:Query",
+            "dynamodb:UpdateItem"
+          ],
+          "Resource": [
+            "arn:aws:dynamodb:ap-south-1:*:table/Customers",
+            "arn:aws:dynamodb:ap-south-1:*:table/Customers/index/*",
+            "arn:aws:dynamodb:ap-south-1:*:table/Requests",
+            "arn:aws:dynamodb:ap-south-1:*:table/Requests/index/*"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "ses:SendEmail",
+            "ses:SendRawEmail"
+          ],
+          "Resource": "*"
+        }
+      ],
+      "versionFunctions": true
+    },
+    "dashboard": {
+      "isEnabledForService": true,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": {
+        "providers": false,
+        "monitoring": false
+      },
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": "JyfBTyllP0dmRGYz6L",
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "serviceRawFile": "org: devdeepnarayan\r\napp: loanmantratestapi\r\nservice: loanmantra-server\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: ap-south-1\r\n  stage: prod\r\n\r\n  httpApi:\r\n    cors:\r\n      allowedOrigins:\r\n        - https://main.d8tu8g8fumigb.amplifyapp.com\r\n      allowedHeaders:\r\n        - Content-Type\r\n        - Authorization\r\n      allowedMethods:\r\n        - GET\r\n        - POST\r\n        - PUT\r\n        - DELETE\r\n        - OPTIONS\r\n\r\n  environment:\r\n    NODE_ENV: production\r\n    CUSTOMERS_TABLE: Customers\r\n    REQUESTS_TABLE: Requests\r\n\r\n  iamRoleStatements:\r\n    - Effect: Allow\r\n      Action:\r\n        - dynamodb:PutItem\r\n        - dynamodb:GetItem\r\n        - dynamodb:Query\r\n        - dynamodb:UpdateItem\r\n      Resource:\r\n        - arn:aws:dynamodb:ap-south-1:*:table/Customers\r\n        - arn:aws:dynamodb:ap-south-1:*:table/Customers/index/*\r\n        - arn:aws:dynamodb:ap-south-1:*:table/Requests\r\n        - arn:aws:dynamodb:ap-south-1:*:table/Requests/index/*\r\n\r\n    - Effect: Allow\r\n      Action:\r\n        - ses:SendEmail\r\n        - ses:SendRawEmail\r\n      Resource: \"*\"\r\n\r\nfunctions:\r\n  api:\r\n    handler: index.handler\r\n    events:\r\n      - httpApi: \"*\"\r\n\r\nresources:\r\n  Resources:\r\n    CustomersTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: Customers\r\n        BillingMode: PAY_PER_REQUEST\r\n        AttributeDefinitions:\r\n          - AttributeName: customerId\r\n            AttributeType: S\r\n          - AttributeName: email\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: customerId\r\n            KeyType: HASH\r\n        GlobalSecondaryIndexes:\r\n          - IndexName: email-index\r\n            KeySchema:\r\n              - AttributeName: email\r\n                KeyType: HASH\r\n            Projection:\r\n              ProjectionType: ALL\r\n\r\n    RequestsTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: Requests\r\n        BillingMode: PAY_PER_REQUEST\r\n        AttributeDefinitions:\r\n          - AttributeName: requestId\r\n            AttributeType: S\r\n          - AttributeName: customerId\r\n            AttributeType: S\r\n          - AttributeName: createdAt\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: requestId\r\n            KeyType: HASH\r\n        GlobalSecondaryIndexes:\r\n          - IndexName: customerId-createdAt-index\r\n            KeySchema:\r\n              - AttributeName: customerId\r\n                KeyType: HASH\r\n              - AttributeName: createdAt\r\n                KeyType: RANGE\r\n            Projection:\r\n              ProjectionType: ALL\r\n",
+    "command": [
+      "help"
+    ],
+    "options": {},
+    "orgId": "9fb0f272-fbb9-4593-84a0-f3f4898fd242",
+    "orgName": "devdeepnarayan",
+    "userId": "RNMZt1KrGVWdcqccT8",
+    "userName": "devdeepnarayan",
+    "serviceProviderAwsAccountId": "000567213445",
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
+  }
+}

@@ -11,7 +11,7 @@ provider:
   httpApi:
     cors:
       allowedOrigins:
-        - https://main.d3a7mju9zni36v.amplifyapp.com
+        - https://main.d8tu8g8fumigb.amplifyapp.com
       allowedHeaders:
         - Content-Type
         - Authorization
@@ -21,41 +21,81 @@ provider:
         - PUT
         - DELETE
         - OPTIONS
-      allowCredentials: false
-      maxAge: 86400
 
   environment:
     NODE_ENV: production
-    DYNAMODB_TABLE_NAME: LoanSubmissions
-    ALLOWED_ORIGINS: https://main.d3a7mju9zni36v.amplifyapp.com
+    CUSTOMERS_TABLE: Customers
+    REQUESTS_TABLE: Requests
 
   iamRoleStatements:
-    - Effect: "Allow"
+    - Effect: Allow
       Action:
         - dynamodb:PutItem
         - dynamodb:GetItem
-        - dynamodb:UpdateItem
         - dynamodb:Query
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/LoanSubmissions
+        - dynamodb:UpdateItem
+      Resource:
+        - arn:aws:dynamodb:ap-south-1:*:table/Customers
+        - arn:aws:dynamodb:ap-south-1:*:table/Customers/index/*
+        - arn:aws:dynamodb:ap-south-1:*:table/Requests
+        - arn:aws:dynamodb:ap-south-1:*:table/Requests/index/*
+
+    - Effect: Allow
+      Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
+      Resource: "*"
 
 functions:
-  createSubmission:
+  api:
     handler: index.handler
     events:
-      - httpApi:
-          path: /api/submissions
-          method: POST
+      - httpApi: "*"
 
-  uploadDocs:
-    handler: index.handler
-    events:
-      - httpApi:
-          path: /api/submissions/{id}/upload
-          method: POST
+resources:
+  Resources:
+    CustomersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Customers
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: customerId
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: customerId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: email-index
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
 
-  health:
-    handler: index.handler
-    events:
-      - httpApi:
-          path: /
-          method: GET
+    RequestsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Requests
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: requestId
+            AttributeType: S
+          - AttributeName: customerId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: requestId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: customerId-createdAt-index
+            KeySchema:
+              - AttributeName: customerId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
